@@ -43,7 +43,7 @@ const manifest: ManifestV3Export = {
     '48': 'images/extension_48.png',
     '128': 'images/extension_128.png',
   },
-  permissions: ['storage', 'tabs'],
+  permissions: ['storage', 'tabs', 'contextMenus'],
 };
 
 export default manifest;
