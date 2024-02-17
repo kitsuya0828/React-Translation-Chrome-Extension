@@ -1,6 +1,5 @@
-import { getBucket } from '@extend-chrome/storage';
-
 import { translate } from '../app/translate';
+import { getBucket } from '@extend-chrome/storage';
 
 interface MyBucket {
   targetLang: string;
@@ -22,8 +21,9 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       case 'translation': {
         const selectedText = info.selectionText !== undefined ? info.selectionText : '';
         const value = await bucket.get();
-        const userTargetLang = value.targetLang ?? 'EN';
+        const userTargetLang = value.targetLang ?? 'JA';
         const translatedText = await translate(selectedText, userTargetLang);
+        console.log('translatedText:', translatedText);
         chrome.tabs.sendMessage(tab.id as number, {
           type: 'SHOW',
           data: {
@@ -42,7 +42,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
   if (message.type === 'TRANSLATE') {
     const selectedText = message.data.selectionText ?? '';
     const value = await bucket.get();
-    const userTargetLang = value.targetLang ?? 'EN';
+    const userTargetLang = value.targetLang ?? 'JA';
     const translatedText = await translate(selectedText, userTargetLang);
     chrome.tabs.sendMessage(sender.tab?.id as number, {
       type: 'SHOW',
