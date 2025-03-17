@@ -1,5 +1,4 @@
 import { createRoot } from 'react-dom/client';
-import '@src/index.css';
 import Popup from '@src/Popup';
 
 function init() {
@@ -9,7 +8,11 @@ function init() {
   }
   const root = createRoot(appContainer);
 
-  root.render(<Popup />);
+  root.render(
+    <div style={{ width: 300, height: 'auto' }}>
+      <Popup />
+    </div>,
+  );
 }
 
 init();
