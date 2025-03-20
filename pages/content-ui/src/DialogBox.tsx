@@ -8,6 +8,7 @@ export interface DialogBoxProps {
   translatedText: string;
   originalText: string;
   targetLang: string;
+  onClose: () => void;
 }
 
 export const DialogBox = (props: DialogBoxProps) => {
@@ -17,6 +18,7 @@ export const DialogBox = (props: DialogBoxProps) => {
 
   const handleClickAway = () => {
     setOpened(false);
+    props.onClose();
   };
 
   const handleChange = (event: SelectChangeEvent<typeof targetLang>) => {
