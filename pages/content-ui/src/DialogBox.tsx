@@ -2,7 +2,7 @@
 import { Avatar, Box, ClickAwayListener, Divider, FormControl, IconButton, MenuItem, Select, Stack, Tooltip, Typography } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import { Clear, ContentCopyOutlined, VolumeUp, Settings } from '@mui/icons-material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export interface DialogBoxProps {
   translatedText: string;
@@ -14,6 +14,7 @@ export interface DialogBoxProps {
 export const DialogBox = (props: DialogBoxProps) => {
   const [opened, setOpened] = useState(true);
   const [targetLang, setTargetLang] = useState(props.targetLang);
+  const [translatedText, setTranslatedText] = useState(props.translatedText);
   const IconUrl = chrome.runtime.getURL('icon-128.png');
 
   const handleClickAway = () => {
@@ -22,8 +23,26 @@ export const DialogBox = (props: DialogBoxProps) => {
   };
 
   const handleChange = (event: SelectChangeEvent<typeof targetLang>) => {
-    setTargetLang(event.target.value);
+    const newTargetLang = event.target.value;
+    setTargetLang(newTargetLang);
+    chrome.runtime.sendMessage({
+      type: 'SWITCH',
+      data: {
+        selectedText: props.originalText,
+        targetLang: newTargetLang,
+      },
+    });
   };
+
+  useEffect(() => {
+    const listener = (message: any) => {
+      if (message.type === 'SWITCHED') {
+        setTranslatedText(message.data.translatedText.toString());
+      }
+    };
+    chrome.runtime.onMessage.addListener(listener);
+    return () => chrome.runtime.onMessage.removeListener(listener);
+  }, [targetLang]);
 
   return opened ? (
     <ClickAwayListener onClickAway={handleClickAway}>
@@ -56,7 +75,7 @@ export const DialogBox = (props: DialogBoxProps) => {
         <Divider />
         <Stack pt={1} spacing={1} textAlign="left">
           <Typography variant="body2" color="textPrimary">
-            {props.translatedText}
+            {translatedText}
           </Typography>
           <Stack direction="row" justifyContent="flex-end" spacing={1} pr={2}>
             <Tooltip title="音声読み上げ" placement="top" arrow>
@@ -67,7 +86,7 @@ export const DialogBox = (props: DialogBoxProps) => {
             <Tooltip title="クリップボードにコピー" placement="top" arrow>
               <IconButton
                 onClick={() => {
-                  navigator.clipboard.writeText(props.translatedText);
+                  navigator.clipboard.writeText(translatedText);
                 }}>
                 <ContentCopyOutlined />
               </IconButton>
