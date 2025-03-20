@@ -1,34 +1,46 @@
 import { createRoot } from 'react-dom/client';
-import App from '@src/App';
-// @ts-expect-error Because file doesn't exist before build
-import tailwindcssOutput from '../dist/tailwind-output.css?inline';
+import { DialogBox } from '@src/DialogBox';
+import { CacheProvider } from '@emotion/react';
+import createCache from '@emotion/cache';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import type {} from '@mui/material/themeCssVarsAugmentation';
 
-const root = document.createElement('div');
-root.id = 'chrome-extension-boilerplate-react-vite-content-view-root';
+const root = document.createElement('chrome-extension-boilerplate-react-vite-content-view-root');
+root.style.zIndex = '2147483647';
+document.body.after(root);
 
-document.body.append(root);
+const shadowRootElement = document.createElement('div');
+shadowRootElement.id = 'shadow-root';
+const shadowContainer = root.attachShadow({ mode: 'open' });
+shadowContainer.appendChild(shadowRootElement);
 
-const rootIntoShadow = document.createElement('div');
-rootIntoShadow.id = 'shadow-root';
+const cache = createCache({ key: 'shadow-css', prepend: true, container: shadowContainer });
+const theme = createTheme({
+  cssVariables: { rootSelector: '#shadow-root', colorSchemeSelector: 'class' },
+  components: {
+    MuiPopover: { defaultProps: { container: shadowRootElement, style: { zIndex: 2147483647 } } },
+    MuiPopper: { defaultProps: { container: shadowRootElement, style: { zIndex: 2147483647 } } },
+  },
+});
 
-const shadowRoot = root.attachShadow({ mode: 'open' });
+const App = () => {
+  return (
+    <div style={{ position: 'absolute', width: '100%', left: '0px', top: '0px', zIndex: 2147483550 }}>
+      <div style={{ position: 'absolute', left: '10px', top: '10px', zIndex: 2147483550 }}>
+        <DialogBox
+          translatedText="ここに翻訳したテキストが入る"
+          originalText="ここに翻訳前のテキストが入る"
+          targetLang="JA"
+        />
+      </div>
+    </div>
+  );
+};
 
-if (navigator.userAgent.includes('Firefox')) {
-  /**
-   * In the firefox environment, adoptedStyleSheets cannot be used due to the bug
-   * @url https://bugzilla.mozilla.org/show_bug.cgi?id=1770592
-   *
-   * Injecting styles into the document, this may cause style conflicts with the host page
-   */
-  const styleElement = document.createElement('style');
-  styleElement.innerHTML = tailwindcssOutput;
-  shadowRoot.appendChild(styleElement);
-} else {
-  /** Inject styles into shadow dom */
-  const globalStyleSheet = new CSSStyleSheet();
-  globalStyleSheet.replaceSync(tailwindcssOutput);
-  shadowRoot.adoptedStyleSheets = [globalStyleSheet];
-}
-
-shadowRoot.appendChild(rootIntoShadow);
-createRoot(rootIntoShadow).render(<App />);
+createRoot(shadowRootElement).render(
+  <CacheProvider value={cache}>
+    <ThemeProvider theme={theme} colorSchemeNode={shadowRootElement}>
+      <App />
+    </ThemeProvider>
+  </CacheProvider>,
+);
