@@ -1,9 +1,17 @@
-import 'webextension-polyfill';
-import { exampleThemeStorage } from '@extension/storage';
-
-exampleThemeStorage.get().then(theme => {
-  console.log('theme', theme);
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.create({
+    id: 'translation',
+    title: '選択したテキストを翻訳',
+    contexts: ['selection'],
+  });
 });
 
-console.log('Background loaded');
-console.log("Edit 'chrome-extension/src/background/index.ts' and save to reload.");
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+  if (tab !== undefined) {
+    switch (info.menuItemId) {
+      case 'translation':
+        console.log('選択されたテキスト: ' + info.selectionText);
+        break;
+    }
+  }
+});
