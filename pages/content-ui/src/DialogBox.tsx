@@ -35,6 +35,7 @@ export const DialogBox = (props: DialogBoxProps) => {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const listener = (message: any) => {
       if (message.type === 'SWITCHED') {
         setTranslatedText(message.data.translatedText.toString());

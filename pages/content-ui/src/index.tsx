@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client';
-import { DialogBox, DialogBoxProps } from '@src/DialogBox';
+import type { DialogBoxProps } from '@src/DialogBox';
+import { DialogBox } from '@src/DialogBox';
 import { CacheProvider } from '@emotion/react';
 import createCache from '@emotion/cache';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -40,6 +41,7 @@ const App = () => {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const listener = (message: any) => {
       if (message.type === 'SHOW') {
         const data: DialogBoxProps = {
@@ -57,7 +59,7 @@ const App = () => {
     };
     chrome.runtime.onMessage.addListener(listener);
     return () => chrome.runtime.onMessage.removeListener(listener);
-  }, []);
+  }, [rect]);
 
   useEffect(() => {
     const handleMouseUp = () => {
