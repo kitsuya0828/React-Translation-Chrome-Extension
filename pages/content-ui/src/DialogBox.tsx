@@ -12,15 +12,15 @@ export interface DialogBoxProps {
 
 export const DialogBox = (props: DialogBoxProps) => {
   const [opened, setOpened] = useState(true);
-  const [lang, setLang] = useState(props.targetLang);
+  const [targetLang, setTargetLang] = useState(props.targetLang);
   const IconUrl = chrome.runtime.getURL('icon-128.png');
 
   const handleClickAway = () => {
     setOpened(false);
   };
 
-  const handleChange = (event: SelectChangeEvent<typeof lang>) => {
-    setLang(event.target.value);
+  const handleChange = (event: SelectChangeEvent<typeof targetLang>) => {
+    setTargetLang(event.target.value);
   };
 
   return opened ? (
@@ -36,7 +36,7 @@ export const DialogBox = (props: DialogBoxProps) => {
           </Stack>
           <Stack direction="row" alignItems="center" justifyContent="end" spacing={0}>
             <FormControl size="small">
-              <Select value={lang} onChange={handleChange} MenuProps={{ disablePortal: true }} displayEmpty>
+              <Select value={targetLang} onChange={handleChange} MenuProps={{ disablePortal: true }} displayEmpty>
                 <MenuItem value="EN">英語</MenuItem>
                 <MenuItem value="KO">韓国語</MenuItem>
                 <MenuItem value="ZH">中国語</MenuItem>
