@@ -16,16 +16,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         const selectedText = info.selectionText ?? '';
         const userTargetLang = await targetLangStorage.get();
         const translatedText = await translate(selectedText, userTargetLang);
-        if (tab.id !== undefined) {
-          chrome.tabs.sendMessage(tab.id, {
-            type: 'SHOW',
-            data: {
-              lang: userTargetLang,
-              translatedText: translatedText,
-              originalText: selectedText,
-            },
-          });
-        }
+        console.log('翻訳結果: ' + translatedText);
         break;
       }
     }
