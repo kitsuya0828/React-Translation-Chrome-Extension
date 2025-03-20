@@ -4,11 +4,11 @@ const API_KEY = process.env.CEB_DEEPL_API_KEY || '';
 // const API_URL = 'https://translation-app.kitsuyaazuma.workers.dev/translate';
 
 export async function translate(text: string, targetLang: string): Promise<string> {
-  let headers: Record<string, string> = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     Authorization: `DeepL-Auth-Key ${API_KEY}`, // DeepL API を使用する場合のみ
   };
-  let requestBody: any = { text: [text], target_lang: targetLang };
+  const requestBody = { text: [text], target_lang: targetLang };
 
   try {
     const response = await fetch(API_URL, {
